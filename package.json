@@ -1,0 +1,32 @@
+{
+  "name": "generator-garden",
+  "version": "0.1.0",
+  "description": "Generator for plus.garden package",
+  "main": "generators/app/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "fs-extra": "^2.0.0",
+    "yeoman-generator": "^1.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dsazz/generator-garden.git"
+  },
+  "keywords": [
+    "yeoman-generator",
+    "garden",
+    "component"
+  ],
+  "author": "Stanislav Stepanenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dsazz/generator-garden/issues"
+  },
+  "homepage": "https://github.com/Dsazz/generator-garden#readme"
+}
