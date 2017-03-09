@@ -10,7 +10,7 @@ module.exports = Generator.extend({
      * Where you prompt users for options
      */
     prompting: function () {
-        var prompts = [];
+        var driverPrompts = [];
         // Have Yeoman greet the user.
         this.log(yosay(
             'Welcome to the hunky-dory ' + chalk.red('generator-garden') + ' generator!'
@@ -23,7 +23,7 @@ module.exports = Generator.extend({
             process.exit(1);
         }
 
-        prompts.push({
+        driverPrompts.push({
             type: 'checkbox',
             name: 'drivers',
             message: 'Choise drivers which you want: ',
@@ -53,7 +53,7 @@ module.exports = Generator.extend({
             }
         });
 
-        return this.prompt(prompts).then(function (props) {
+        return this.prompt(driverPrompts).then(function (props) {
 
             this.driversChecked = props.drivers.length > 0;
 
@@ -69,10 +69,13 @@ module.exports = Generator.extend({
      */
     writing: function () {
         if (this.webdriverInit) {
-            this._webdriverDirInit();
+            this._webdriverFilesInit();
         }
 
-        this._gardenContainerInit();
+        if (this.driversChecked) {
+            this._supportFilesInit();
+            this._gardenFilesInit();
+        }
     },
 
     /**
@@ -99,9 +102,8 @@ module.exports = Generator.extend({
      * Called last
      */
     end: function () {
-        this.log(yosay(
-            chalk.magenta('Good bye ...')
-        ));
+        // Show user hints about all checked drivers!
+        this.log(yosay(chalk.red(this._generateHintsText()), {maxLength: 65}));
     },
 
     _isExistsPackageJSON: function () {
@@ -111,24 +113,55 @@ module.exports = Generator.extend({
     /**
      * Private method for initializing webdriver directories
      */
-    _webdriverDirInit: function () {
+    _webdriverFilesInit: function () {
         this.fs.copy(
-            this.templatePath('webdriver/features'),
-            this.destinationPath('features')
+            this.templatePath('features/step_definitions/common.js'),
+            this.destinationPath('features/step_definitions/common.js')
         );
-
-        this.log(chalk.green('Copied Webdriver related dirs.'));
+        this.fs.copy(
+            this.templatePath('features/Health.feature'),
+            this.destinationPath('features/Health.feature')
+        );
     },
 
     /**
      * Private method for initializing webdriver package relations
      */
     _webdriverPackageInit: function () {
-        //"plus.garden": "github:dsazz/plus.garden",
         this.npmInstall(
             ['plus.garden.webdriver@github:dsazz/plus.garden.webdriver'],
             { 'save': true }
         );
+    },
+
+    _supportFilesInit: function () {
+        this._supportWorldInit();
+        this._supportHooksInit();
+    },
+
+    _supportHooksInit: function () {
+        this.fs.copy(
+            this.templatePath('features/support/hooks.js'),
+            this.destinationPath('features/support/hooks.js')
+        );
+    },
+
+    _supportWorldInit: function () {
+        this.fs.copyTpl(
+            this.templatePath('features/support/world_tpl.js'),
+            this.destinationPath('features/support/world.js'),
+            {
+                includeWebdriver: this.webdriverInit
+            }
+        );
+    },
+
+    /**
+     * Setup garden env
+     */
+    _gardenFilesInit: function () {
+        this._gardenIndexInit();
+        this._gardenContainerInit();
     },
 
     _gardenContainerInit: function () {
@@ -139,7 +172,33 @@ module.exports = Generator.extend({
                 includeWebdriver: this.webdriverInit
             }
         );
+    },
 
-        this.log(chalk.green('Init container.js'));
+    _gardenIndexInit: function () {
+        this.fs.copy(
+            this.templatePath('garden.js'),
+            this.destinationPath('garden.js')
+        );
+    },
+
+    /**
+     * Generate hints after installation based on checked options
+     * @returns {String}
+     */
+    _generateHintsText: function () {
+        var hintsText = '';
+        if (this.webdriverInit) {
+            hintsText += this._getWebdriverHintText();
+        }
+
+        return hintsText || 'Good buy ...';
+    },
+
+    /**
+     * Get hint for webdriver
+     * @returns {String}
+     */
+    _getWebdriverHintText: function () {
+        return 'If you whant use Webdriver don\'t forget also install webdriver-manager (npm install -g webdriver-manager)!';
     }
 });

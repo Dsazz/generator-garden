@@ -79,22 +79,48 @@ describe('generator-garden:app', function () {
         }.bind(this));
     });
 
-    it('should add webdriver default features', function (done) {
+    it('should init default webdriver env', function (done) {
         helpers.mockPrompt(this.app, {
             drivers: ['webdriver']
         });
 
         this.app.run(function () {
             assert.file([
-                'features/Health.feature'
+                'features/Health.feature',
+                'features/step_definitions/common.js',
+                'features/support/hooks.js',
+                'features/support/world.js'
             ]);
+            /** File container.js should contain Webdriver */
             assert.fileContent(
                 this.app.destinationPath('container.js'),
                 /container\.register\(\'Webdriver\', require\(\'plus\.garden\.webdriver\'\)\)/
+            );
+
+            /** File world.js should contain initialization of WebdriverBrowser */
+            assert.fileContent(
+                this.app.destinationPath('features/support/world.js'),
+                /garden\.get\(\'Webdriver\.Browser\'\)\.create\(function \(browserService\) \{/
+            );
+            /** File world.js should contain setuping of default timeout */
+            assert.fileContent(
+                this.app.destinationPath('features/support/world.js'),
+                /setDefaultTimeout\(config\.get\(\'webdriver:waitTimeout\'\)\)/
             );
 
             done();
         }.bind(this));
     });
 
+    it('should show correct hints by webdriver', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['webdriver']
+        });
+
+        this.app.run(function () {
+            assert.textEqual(this.app._generateHintsText(), this.app._getWebdriverHintText())
+
+            done();
+        }.bind(this));
+    })
 });

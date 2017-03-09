@@ -8,15 +8,19 @@ function World() {
     this.garden = garden;
     this.config = config;
 
+    <% if (includeWebdriver) { %>
     garden.get('Webdriver.Browser').create(function (browserService) {
         this.browserService = browserService;
         this.driver = browserService.driver;
         this.browser = browserService.browser;
     }.bind(this));
+    <% } %>
 };
 
 defineSupportCode(function({Given, Then, setWorldConstructor, setDefaultTimeout}) {
     setWorldConstructor(World);
+    <% if (includeWebdriver) { %>
     setDefaultTimeout(config.get('webdriver:waitTimeout'));
+    <% } %>
 });
 
