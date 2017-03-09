@@ -40,6 +40,11 @@ module.exports = Generator.extend({
                     checked: true
                 },
                 {
+                    key: 'fixture_mongo',
+                    name: 'Fixtures driver for MongoDB',
+                    value: 'fixture_mongo',
+                },
+                {
                     key: 'fixture_mysql',
                     name: 'Fixtures driver for MYSQL',
                     value: 'fixture_mysql',
@@ -60,6 +65,7 @@ module.exports = Generator.extend({
             this.apiTesterInit = props.drivers.includes('api_tester');
             this.webdriverInit = props.drivers.includes('webdriver');
             this.fixturesMysqlInit = props.drivers.includes('fixture_mysql');
+            this.fixturesMongoInit = props.drivers.includes('fixture_mongo');
 
         }.bind(this));
     },
@@ -70,6 +76,10 @@ module.exports = Generator.extend({
     writing: function () {
         if (this.webdriverInit) {
             this._webdriverFilesInit();
+        }
+
+        if (this.apiTesterInit) {
+            this._apiTesterFilesInit();
         }
 
         if (this.driversChecked) {
@@ -96,13 +106,17 @@ module.exports = Generator.extend({
         if (this.webdriverInit) {
             this._webdriverPackageInit();
         }
+
+        if (this.apiTesterInit) {
+            this._apiTesterPackageInit();
+        }
     },
 
     /**
      * Called last
      */
     end: function () {
-        // Show user hints about all checked drivers!
+        // Show user hints about all checked drivers
         this.log(yosay(chalk.red(this._generateHintsText()), {maxLength: 65}));
     },
 
@@ -111,7 +125,7 @@ module.exports = Generator.extend({
     },
 
     /**
-     * Private method for initializing webdriver directories
+     * Method for initializing webdriver directories
      */
     _webdriverFilesInit: function () {
         this.fs.copy(
@@ -125,7 +139,7 @@ module.exports = Generator.extend({
     },
 
     /**
-     * Private method for initializing webdriver package relations
+     * Method for initializing webdriver package relations
      */
     _webdriverPackageInit: function () {
         this.npmInstall(
@@ -134,15 +148,41 @@ module.exports = Generator.extend({
         );
     },
 
+    /**
+     * Method for initializing  directories
+     */
+    _apiTesterFilesInit: function () {
+        this.fs.copy(
+            this.templatePath('features/step_definitions/api.js'),
+            this.destinationPath('features/step_definitions/api.js')
+        );
+        this.fs.copy(
+            this.templatePath('features/Api.feature'),
+            this.destinationPath('features/Api.feature')
+        );
+    },
+
+    /**
+     * Method for initializing ApiTester package relations
+     */
+    _apiTesterPackageInit: function () {
+        this.npmInstall(['plus.garden.api'], { 'save': true });
+    },
+
     _supportFilesInit: function () {
         this._supportWorldInit();
         this._supportHooksInit();
     },
 
     _supportHooksInit: function () {
-        this.fs.copy(
-            this.templatePath('features/support/hooks.js'),
-            this.destinationPath('features/support/hooks.js')
+        this.fs.copyTpl(
+            this.templatePath('features/support/hooks_tpl.js'),
+            this.destinationPath('features/support/hooks.js'),
+            {
+                includeWebdriver: this.webdriverInit,
+                includeApiTester: this.apiTesterInit,
+                includeFixturesMongo: this.fixturesMongoInit
+            }
         );
     },
 
@@ -151,7 +191,8 @@ module.exports = Generator.extend({
             this.templatePath('features/support/world_tpl.js'),
             this.destinationPath('features/support/world.js'),
             {
-                includeWebdriver: this.webdriverInit
+                includeWebdriver: this.webdriverInit,
+                includeApiTester: this.apiTesterInit
             }
         );
     },
@@ -169,7 +210,8 @@ module.exports = Generator.extend({
             this.templatePath('container_tpl.js'),
             this.destinationPath('container.js'),
             {
-                includeWebdriver: this.webdriverInit
+                includeWebdriver: this.webdriverInit,
+                includeApiTester: this.apiTesterInit
             }
         );
     },
@@ -186,12 +228,16 @@ module.exports = Generator.extend({
      * @returns {String}
      */
     _generateHintsText: function () {
-        var hintsText = '';
+        var hintsText = [];
         if (this.webdriverInit) {
-            hintsText += this._getWebdriverHintText();
+            hintsText.push(this._getWebdriverHintText());
         }
 
-        return hintsText || 'Good buy ...';
+        if (this.apiTesterInit) {
+            hintsText.push(this._getApiTesterHintText());
+        }
+
+        return hintsText.join('\n\t') || 'Goodbye ...';
     },
 
     /**
@@ -199,6 +245,10 @@ module.exports = Generator.extend({
      * @returns {String}
      */
     _getWebdriverHintText: function () {
-        return 'If you whant use Webdriver don\'t forget also install webdriver-manager (npm install -g webdriver-manager)!';
+        return 'If you whant to use Webdriver don\'t forget also install webdriver-manager (npm install -g webdriver-manager)!';
+    },
+
+    _getApiTesterHintText: function () {
+        return 'Don\'t run tests of ApiTester and Webdriver together. This feature don\'t implemented yet.';
     }
 });

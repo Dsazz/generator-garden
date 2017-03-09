@@ -9,4 +9,8 @@
     <% if (includeWebdriver) { %>
     container.register('Webdriver', require('plus.garden.webdriver'));
     <% } %>
+
+    <% if (includeApiTester) { %>
+    container.register('ApiModule', require('plus.garden.api'));
+    <% } %>
 }

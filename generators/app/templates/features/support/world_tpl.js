@@ -15,6 +15,10 @@ function World() {
         this.browser = browserService.browser;
     }.bind(this));
     <% } %>
+
+    <% if (includeApiTester) { %>
+    this.api = garden.get('ApiTester');
+    <% } %>
 };
 
 defineSupportCode(function({Given, Then, setWorldConstructor, setDefaultTimeout}) {

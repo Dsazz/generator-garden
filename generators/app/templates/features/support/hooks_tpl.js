@@ -1,5 +1,6 @@
 var {defineSupportCode} = require('cucumber');
 defineSupportCode(function({After, Before}) {
+    <% if (includeWebdriver) { %>
     Before(function () {
         this.browserService.before();
     });
@@ -7,7 +8,9 @@ defineSupportCode(function({After, Before}) {
     After(function (scenarioResult, callback) {
         this.browserService.after(callback);
     });
+    <% } %>
 
+    <% if (includeFixturesMongo) { %>
     Before({tags: "@fixtures.drop"}, function (scenarioResult, callback) {
         this.garden.wait.launchFiber(function (scenarioResult, callback) {
             this.garden.get('FixtureLoader').drop();
@@ -21,4 +24,5 @@ defineSupportCode(function({After, Before}) {
             callback();
         }.bind(this));
     });
+    <% } %>
 });
