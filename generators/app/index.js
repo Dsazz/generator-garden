@@ -240,7 +240,7 @@ module.exports = Generator.extend({
             hintsText.push(this._getApiTesterHintText());
         }
 
-        return hintsText.join('\n\t') || 'Goodbye ...';
+        return hintsText.join('\n\t') || this._sayGoodbyeText();
     },
 
     /**
@@ -257,5 +257,13 @@ module.exports = Generator.extend({
      */
     _getApiTesterHintText: function () {
         return '';
+    },
+
+    /**
+     * Say Goodbye
+     * @returns {String}
+     */
+    _sayGoodbyeText: function () {
+        return 'Goodbye ...';
     }
 });

@@ -187,7 +187,7 @@ describe('generator-garden:app', function () {
         });
 
         this.app.run(function () {
-            assert.textEqual(this.app._generateHintsText(), this.app._getApiTesterHintText())
+            assert.textEqual(this.app._generateHintsText(), this.app._sayGoodbyeText())
 
             done();
         }.bind(this));
