@@ -169,6 +169,9 @@ module.exports = Generator.extend({
         this.npmInstall(['plus.garden.api'], { 'save': true });
     },
 
+    /**
+     * Method for initializing features/support dir
+     */
     _supportFilesInit: function () {
         this._supportWorldInit();
         this._supportHooksInit();
@@ -248,7 +251,11 @@ module.exports = Generator.extend({
         return 'If you whant to use Webdriver don\'t forget also install webdriver-manager (npm install -g webdriver-manager)!';
     },
 
+    /**
+     * Get hint for ApiTester
+     * @returns {String}
+     */
     _getApiTesterHintText: function () {
-        return 'Don\'t run tests of ApiTester and Webdriver together. This feature don\'t implemented yet.';
+        return '';
     }
 });

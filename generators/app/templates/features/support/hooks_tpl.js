@@ -1,11 +1,11 @@
 var {defineSupportCode} = require('cucumber');
 defineSupportCode(function({After, Before}) {
     <% if (includeWebdriver) { %>
-    Before(function () {
+    Before("@webdriver.init", function () {
         this.browserService.before();
     });
 
-    After(function (scenarioResult, callback) {
+    After("@webdriver.quit", function (scenarioResult, callback) {
         this.browserService.after(callback);
     });
     <% } %>

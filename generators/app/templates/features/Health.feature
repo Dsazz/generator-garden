@@ -1,3 +1,4 @@
+@webdriver.init @webdriver.quit
 Feature: Health feature
 
   @health
