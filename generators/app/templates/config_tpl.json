@@ -1,29 +1,51 @@
 {
-    <% if (includeWebdriver) { %>
     "host": "https://localhost",
 
+    <% if (includeWebdriver) { %>
     "webdriver": {
+
+        "server_host": "localhost",
+        "server_port": 4444,
+
+        "browser": "chrome",
+        "profile_name": "default",
+
+        "screen_resolution":"1280x1024",
+        "waitTimeout": 7000,
+
         "profile": {
-            "remote": {
-                "browser": "chrome",
-                "server_host": "192.168.80.1",
-                "proxy_host": "192.168.80.101"
+            "default": {}
+        },
+        "capabilities": {
+            "phantomjs": {
+                "browserName": "phantomjs",
+                "phantomjs.cli.args": ["--ignore-ssl-errors=yes"]
+            },
+            "chrome": {
+                "browserName": "chrome",
+                "acceptSslCerts": true,
+                "chromeOptions": {
+                    "args": ["--test-type"]
+                }
+            },
+            "firefox": {
+                "browserName": "firefox"
             }
         }
-    }
+    } <% if (includeApiTester || includeFixturesMongo || includeFixturesMysql || includeFixturesDocker) { %>,<% } %>
     <% } %>
 
     <% if (includeApiTester) { %>
     "api": {
         "host": "http://google.com"
-    }
+    } <% if (includeFixturesMongo || includeFixturesMysql || includeFixturesDocker) { %>,<% } %>
     <% } %>
 
     <% if (includeFixturesMongo) { %>
     "fixtures-mongo": {
         "uri": "mongodb://user:password@localhost:27017/dbname",
         "fixtures": "fixtures/mongo"
-    }
+    } <% if (includeFixturesMysql || includeFixturesDocker) { %>,<% } %>
     <% } %>
 
     <% if (includeFixturesMysql) { %>
@@ -31,7 +53,7 @@
         "uri": "mysql://user@localhost:3306/dbname",
         "models": "fixtures/mysql/models",
         "fixtures": "fixtures/mysql"
-    }
+    } <% if (includeFixturesDocker) { %>,<% } %>
     <% } %>
 
     <% if (includeFixturesDocker) { %>

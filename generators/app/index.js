@@ -74,6 +74,23 @@ module.exports = Generator.extend({
             this.fixturesMysqlInit = props.drivers.includes('fixture_mysql');
             this.fixturesDockerInit = props.drivers.includes('fixture_docker');
 
+            this.webdriverDockerFileInit = false;
+
+            var additionalPrompts = [];
+            if (this.webdriverInit) {
+                additionalPrompts.push({
+                    type: 'confirm',
+                    name: 'webdriver_docker_file_init',
+                    message: 'Do you whant also install docker-compose.yml with selenium configuration for Webdriver ?'
+                });
+            }
+
+            if (additionalPrompts.length) {
+                return this.prompt(additionalPrompts).then(function (props) {
+                    this.webdriverDockerFileInit = props.webdriver_docker_file_init;
+                }.bind(this));
+            }
+
         }.bind(this));
     },
 
@@ -163,6 +180,13 @@ module.exports = Generator.extend({
      * Method for initializing webdriver directories
      */
     _webdriverFilesInit: function () {
+        if (this.webdriverDockerFileInit) {
+            this.fs.copy(
+                this.templatePath('docker-compose.yml'),
+                this.destinationPath('docker-compose.yml')
+            );
+        }
+
         this.fs.copy(
             this.templatePath('features/step_definitions/common.js'),
             this.destinationPath('features/step_definitions/common.js')
@@ -299,6 +323,7 @@ module.exports = Generator.extend({
      */
     _gardenFilesInit: function () {
         this._gardenIndexInit();
+        this._gardenParametersInit();
         this._gardenContainerInit();
         this._gardenConfigInit();
     },
@@ -321,6 +346,13 @@ module.exports = Generator.extend({
         this.fs.copy(
             this.templatePath('garden.js'),
             this.destinationPath('garden.js')
+        );
+    },
+
+    _gardenParametersInit: function () {
+        this.fs.copy(
+            this.templatePath('parameters.json'),
+            this.destinationPath('parameters.json')
         );
     },
 

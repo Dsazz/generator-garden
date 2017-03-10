@@ -50,11 +50,18 @@ describe('generator-garden:app', function () {
         done();
     });
 
-    it('should add garden package', function (done) {
+    it('should add garden package and files', function (done) {
         helpers.mockPrompt(this.app, {
             drivers: ['webdriver']
         });
         this.app.run(function () {
+            assert.file([
+                'container.js',
+                'garden.js',
+                'parameters.json',
+                'config.json'
+            ]);
+
             assert.equal(
                 'plus.garden@github:dsazz/plus.garden',
                 this.npmInstallCalls[1][0]
@@ -118,17 +125,58 @@ describe('generator-garden:app', function () {
             assert.JSONFileContent(
                 this.app.destinationPath('config.json'),
                 {
+
                     "webdriver": {
+
+                        "server_host": "localhost",
+                        "server_port": 4444,
+
+                        "browser": "chrome",
+                        "profile_name": "default",
+
+                        "screen_resolution":"1280x1024",
+                        "waitTimeout": 7000,
+
                         "profile": {
-                            "remote": {
-                                "browser": "chrome",
-                                "server_host": "192.168.80.1",
-                                "proxy_host": "192.168.80.101"
+                            "default": {}
+                        },
+                        "capabilities": {
+                            "phantomjs": {
+                                "browserName": "phantomjs",
+                                "phantomjs.cli.args": ["--ignore-ssl-errors=yes"]
+                            },
+                            "chrome": {
+                                "browserName": "chrome",
+                                "acceptSslCerts": true,
+                                "chromeOptions": {
+                                    "args": ["--test-type"]
+                                }
+                            },
+                            "firefox": {
+                                "browserName": "firefox"
                             }
                         }
                     }
                 }
             );
+
+            done();
+        }.bind(this));
+    });
+
+    it('should init docker-compose.yml for webdriver env', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['webdriver', 'webdriver_docker_file_init']
+        });
+
+        this.app.run(function () {
+            assert.file([
+                'docker-compose.yml',
+                'features/Health.feature',
+                'features/step_definitions/common.js',
+                'features/support/hooks.js',
+                'features/support/world.js'
+            ]);
 
             done();
         }.bind(this));

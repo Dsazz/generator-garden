@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+    hub:
+        image: elgalu/selenium
+        ports:
+            # Note 24444 is the default SELENIUM_HUB_PORT inside the container
+            #  and  4444 will be mapped into your host for easy access.
+            - 4444:4444
+        environment:
+            - SELENIUM_HUB_PORT=4444
+            - GRID=true
+            - CHROME=false
+            - FIREFOX=false
+
+    chrome:
+        image: elgalu/selenium
+        network_mode: "service:hub"
+        depends_on:
+            - hub
+        shm_size: 1g
+        environment:
+            - PICK_ALL_RANDOM_PORTS=true
+            - SELENIUM_HUB_PORT=4444
+            - SCREEN_WIDTH=1300
+            - SCREEN_HEIGHT=999
+            - VIDEO=${VIDEO-false}
+            - GRID=false
+            - CHROME=true
+            - FIREFOX=false
