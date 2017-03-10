@@ -340,4 +340,67 @@ describe('generator-garden:app', function () {
             done();
         }.bind(this));
     });
+
+    /*************** Separate unit test in the future *************************/
+
+    it('should add fixtures Docker dependencies', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['fixture_docker']
+        });
+
+        this.app.run(function () {
+            assert.equal(
+                'plus.garden.fixtures.docker-compose',
+                this.npmInstallCalls[2][0]
+            );
+
+            done();
+        }.bind(this));
+    });
+
+    it('should init default fixtures Docker env', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['fixture_docker']
+        });
+
+        this.app.run(function () {
+            assert.file([
+                'fixtures/docker-compose/Dockerfile',
+                'fixtures/docker-compose/docker-compose.yml',
+                'fixtures/docker-compose/dump/db1/system.indexes.bson',
+                'fixtures/docker-compose/dump/db1/users.bson'
+            ]);
+            /** File container.js should contain fixtures Docker module */
+            assert.fileContent(
+                this.app.destinationPath('container.js'),
+                /container\.register\(\'DockerComposeFixturesModule\', require\(\'plus\.garden\.fixtures\.docker-compose\'\)\)/
+            );
+
+            /** File config.json should contain config for Docker */
+            assert.JSONFileContent(
+                this.app.destinationPath('config.json'),
+                {
+                    "fixtures-docker-compose": {
+                        "compose": "fixtures/docker-compose/docker-compose.yml",
+                        "autoSudo": true,
+                        "sudo": false
+                    }
+                }
+            );
+
+            done();
+        }.bind(this));
+    });
+
+    it('should show correct hints by Docker env', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['fixture_docker']
+        });
+
+        this.app.run(function () {
+            assert.textEqual(this.app._generateHintsText(), this.app._getFixturesDockerHintText())
+
+            done();
+        }.bind(this));
+    });
 });

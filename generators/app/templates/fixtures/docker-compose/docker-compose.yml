@@ -1,0 +1,5 @@
+fixtures:
+  build: ./
+  command: "mongod --smallfiles"
+  ports:
+    - "17017:27017" #host:service

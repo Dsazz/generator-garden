@@ -49,11 +49,17 @@ module.exports = Generator.extend({
                     name: 'Fixtures driver for MYSQL',
                     value: 'fixture_mysql',
                 },
+                {
+                    key: 'fixture_docker',
+                    name: 'Fixtures driver for Docker',
+                    value: 'fixture_docker',
+                },
             ],
             validate: function (answer) {
                 if (answer.length < 1) {
-                    return yosay('You must choose at least one driver !');
+                    return yosay(chalk.red('You must choose at least one driver !'));;
                 }
+
                 return true;
             }
         });
@@ -64,8 +70,9 @@ module.exports = Generator.extend({
 
             this.apiTesterInit = props.drivers.includes('api_tester');
             this.webdriverInit = props.drivers.includes('webdriver');
-            this.fixturesMysqlInit = props.drivers.includes('fixture_mysql');
             this.fixturesMongoInit = props.drivers.includes('fixture_mongo');
+            this.fixturesMysqlInit = props.drivers.includes('fixture_mysql');
+            this.fixturesDockerInit = props.drivers.includes('fixture_docker');
 
         }.bind(this));
     },
@@ -90,6 +97,10 @@ module.exports = Generator.extend({
             this._fixturesMysqlFilesInit();
         }
 
+        if (this.fixturesDockerInit) {
+            this._fixturesDockerFilesInit();
+        }
+
         if (this.driversChecked) {
             this._supportFilesInit();
             this._gardenFilesInit();
@@ -112,6 +123,10 @@ module.exports = Generator.extend({
             this._webdriverPackageInit();
         }
 
+        if (this.apiTesterInit) {
+            this._apiTesterPackageInit();
+        }
+
         if (this.fixturesMongoInit) {
             this._fixturesMongoPackageInit();
         }
@@ -120,8 +135,8 @@ module.exports = Generator.extend({
             this._fixturesMysqlPackageInit();
         }
 
-        if (this.apiTesterInit) {
-            this._apiTesterPackageInit();
+        if (this.fixturesDockerInit) {
+            this._fixturesDockerPackageInit();
         }
     },
 
@@ -220,6 +235,35 @@ module.exports = Generator.extend({
     },
 
     /**
+     * Method for initializing Docker fixtures package relations
+     */
+    _fixturesDockerPackageInit: function () {
+        this.npmInstall(['plus.garden.fixtures.docker-compose'], { 'save': true });
+    },
+
+    /**
+     * Method for initializing MongoDB fixtures directories
+     */
+    _fixturesDockerFilesInit: function () {
+        this.fs.copy(
+            this.templatePath('fixtures/docker-compose/Dockerfile'),
+            this.destinationPath('fixtures/docker-compose/Dockerfile')
+        );
+        this.fs.copy(
+            this.templatePath('fixtures/docker-compose/docker-compose.yml'),
+            this.destinationPath('fixtures/docker-compose/docker-compose.yml')
+        );
+        this.fs.copy(
+            this.templatePath('fixtures/docker-compose/dump/db1/system.indexes.bson'),
+            this.destinationPath('fixtures/docker-compose/dump/db1/system.indexes.bson')
+        );
+        this.fs.copy(
+            this.templatePath('fixtures/docker-compose/dump/db1/users.bson'),
+            this.destinationPath('fixtures/docker-compose/dump/db1/users.bson')
+        );
+    },
+
+    /**
      * Method for initializing features/support dir
      */
     _supportFilesInit: function () {
@@ -267,7 +311,8 @@ module.exports = Generator.extend({
                 includeWebdriver: this.webdriverInit,
                 includeApiTester: this.apiTesterInit,
                 includeFixturesMongo: this.fixturesMongoInit,
-                includeFixturesMysql: this.fixturesMysqlInit
+                includeFixturesMysql: this.fixturesMysqlInit,
+                includeFixturesDocker: this.fixturesDockerInit
             }
         );
     },
@@ -287,7 +332,8 @@ module.exports = Generator.extend({
                 includeWebdriver: this.webdriverInit,
                 includeApiTester: this.apiTesterInit,
                 includeFixturesMongo: this.fixturesMongoInit,
-                includeFixturesMysql: this.fixturesMysqlInit
+                includeFixturesMysql: this.fixturesMysqlInit,
+                includeFixturesDocker: this.fixturesDockerInit
             }
         );
     },
@@ -302,6 +348,10 @@ module.exports = Generator.extend({
             hintsText.push(this._getWebdriverHintText());
         }
 
+        if (this.fixturesDockerInit) {
+            hintsText.push(this._getFixturesDockerHintText());
+        }
+
         return hintsText.join('\n\t') || this._sayGoodbyeText();
     },
 
@@ -311,6 +361,14 @@ module.exports = Generator.extend({
      */
     _getWebdriverHintText: function () {
         return 'If you whant to use Webdriver don\'t forget also install webdriver-manager (npm install -g webdriver-manager)!';
+    },
+
+    /**
+     * Get hint for webdriver
+     * @returns {String}
+     */
+    _getFixturesDockerHintText: function () {
+        return 'Don\'t forget install docker (https://www.docker.com/) and docker-compose (https://docs.docker.com/compose/) for using docker fixtures provider!';
     },
 
     /**

@@ -33,4 +33,12 @@
         "fixtures": "fixtures/mysql"
     }
     <% } %>
+
+    <% if (includeFixturesDocker) { %>
+    "fixtures-docker-compose": {
+        "compose": "fixtures/docker-compose/docker-compose.yml",
+        "autoSudo": true,
+        "sudo": false
+    }
+    <% } %>
 }

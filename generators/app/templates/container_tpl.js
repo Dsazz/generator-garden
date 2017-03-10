@@ -21,4 +21,8 @@
     <% if (includeFixturesMysql) { %>
     container.register('MysqlFixtureLoaderModule', require('plus.garden.fixtures-mysql'));
     <% } %>
+
+    <% if (includeFixturesDocker) { %>
+    container.register('DockerComposeFixturesModule', require('plus.garden.fixtures.docker-compose'));
+    <% } %>
 }
