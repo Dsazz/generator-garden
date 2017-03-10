@@ -114,6 +114,22 @@ describe('generator-garden:app', function () {
                 /this\.browserService\.before\(\)/
             );
 
+            /** File config.json should contain config for Webdriver */
+            assert.JSONFileContent(
+                this.app.destinationPath('config.json'),
+                {
+                    "webdriver": {
+                        "profile": {
+                            "remote": {
+                                "browser": "chrome",
+                                "server_host": "192.168.80.1",
+                                "proxy_host": "192.168.80.101"
+                            }
+                        }
+                    }
+                }
+            );
+
             done();
         }.bind(this));
     });
@@ -128,7 +144,7 @@ describe('generator-garden:app', function () {
 
             done();
         }.bind(this));
-    })
+    });
 
     /*************** Separate unit test in the future *************************/
 
@@ -177,6 +193,16 @@ describe('generator-garden:app', function () {
                 /this\.browserService\.before\(\)/
             );
 
+            /** File config.json should contain config for ApiTester */
+            assert.JSONFileContent(
+                this.app.destinationPath('config.json'),
+                {
+                    "api": {
+                        "host": "http://google.com"
+                    }
+                }
+            );
+
             done();
         }.bind(this));
     });
@@ -191,5 +217,127 @@ describe('generator-garden:app', function () {
 
             done();
         }.bind(this));
-    })
+    });
+
+    /*************** Separate unit test in the future *************************/
+
+    it('should add fixtures Mongo dependencies', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['fixture_mongo']
+        });
+
+        this.app.run(function () {
+            assert.equal(
+                'plus.garden.fixtures-mongo',
+                this.npmInstallCalls[2][0]
+            );
+
+            done();
+        }.bind(this));
+    });
+
+    it('should init default fixtures Mongo env', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['fixture_mongo']
+        });
+
+        this.app.run(function () {
+            assert.file([
+                'fixtures/mongo/user.js'
+            ]);
+            /** File container.js should contain fixtures MongoDb module */
+            assert.fileContent(
+                this.app.destinationPath('container.js'),
+                /container\.register\(\'MongoFixtureLoaderModule\', require\(\'plus\.garden\.fixtures-mongo\'\)\)/
+            );
+
+            /** File config.json should contain config for MongoDb */
+            assert.JSONFileContent(
+                this.app.destinationPath('config.json'),
+                {
+                    "fixtures-mongo": {
+                    "uri": "mongodb://user:password@localhost:27017/dbname",
+                        "fixtures": "fixtures/mongo"
+                    }
+                }
+            );
+
+            /** File hooks.js should not contain hooks related to fixtures Mongo */
+            assert.fileContent(
+                this.app.destinationPath('features/support/hooks.js'),
+                /Before\(\{tags\: \"\@fixtures\.drop\"\}, function \(scenarioResult, callback\) \{/
+            );
+
+            done();
+        }.bind(this));
+    });
+
+    it('should show correct hints by Mongo env', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['fixture_mongo']
+        });
+
+        this.app.run(function () {
+            assert.textEqual(this.app._generateHintsText(), this.app._sayGoodbyeText())
+
+            done();
+        }.bind(this));
+    });
+
+    /*************** Separate unit test in the future *************************/
+
+    it('should add fixtures Mysql dependencies', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['fixture_mysql']
+        });
+
+        this.app.run(function () {
+            assert.equal(
+                'plus.garden.fixtures-mysql',
+                this.npmInstallCalls[2][0]
+            );
+
+            done();
+        }.bind(this));
+    });
+
+    it('should init default fixtures Mysql env', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['fixture_mysql']
+        });
+
+        this.app.run(function () {
+            /** File container.js should contain fixtures Mysql module */
+            assert.fileContent(
+                this.app.destinationPath('container.js'),
+                /container\.register\(\'MysqlFixtureLoaderModule\', require\(\'plus\.garden\.fixtures-mysql\'\)\)/
+            );
+
+            /** File config.json should contain config for Mysql */
+            assert.JSONFileContent(
+                this.app.destinationPath('config.json'),
+                {
+                    "fixtures-mysql": {
+                        "uri": "mysql://user@localhost:3306/dbname",
+                        "models": "fixtures/mysql/models",
+                        "fixtures": "fixtures/mysql"
+                    }
+                }
+            );
+
+            done();
+        }.bind(this));
+    });
+
+    it('should show correct hints by Mysql env', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['fixture_mysql']
+        });
+
+        this.app.run(function () {
+            assert.textEqual(this.app._generateHintsText(), this.app._sayGoodbyeText())
+
+            done();
+        }.bind(this));
+    });
 });

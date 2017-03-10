@@ -82,6 +82,14 @@ module.exports = Generator.extend({
             this._apiTesterFilesInit();
         }
 
+        if (this.fixturesMongoInit) {
+            this._fixturesMongoFilesInit();
+        }
+
+        if (this.fixturesMysqlInit) {
+            this._fixturesMysqlFilesInit();
+        }
+
         if (this.driversChecked) {
             this._supportFilesInit();
             this._gardenFilesInit();
@@ -97,14 +105,19 @@ module.exports = Generator.extend({
         });
 
         if (this.driversChecked) {
-            this.npmInstall(
-                ['plus.garden@github:dsazz/plus.garden'],
-                { 'save': true }
-            );
+            this._gardenPackageInit();
         }
 
         if (this.webdriverInit) {
             this._webdriverPackageInit();
+        }
+
+        if (this.fixturesMongoInit) {
+            this._fixturesMongoPackageInit();
+        }
+
+        if (this.fixturesMysqlInit) {
+            this._fixturesMysqlPackageInit();
         }
 
         if (this.apiTesterInit) {
@@ -122,6 +135,13 @@ module.exports = Generator.extend({
 
     _isExistsPackageJSON: function () {
         return fs.existsSync(this.destinationPath('package.json'));
+    },
+
+    /**
+     * Method for initializing Garden package relations
+     */
+    _gardenPackageInit: function () {
+        this.npmInstall(['plus.garden@github:dsazz/plus.garden'], { 'save': true });
     },
 
     /**
@@ -170,6 +190,36 @@ module.exports = Generator.extend({
     },
 
     /**
+     * Method for initializing MongoDB fixtures package relations
+     */
+    _fixturesMongoPackageInit: function () {
+        this.npmInstall(['plus.garden.fixtures-mongo'], { 'save': true });
+    },
+
+    /**
+     * Method for initializing MongoDB fixtures directories
+     */
+    _fixturesMongoFilesInit: function () {
+        this.fs.copy(
+            this.templatePath('fixtures/mongo/user.js'),
+            this.destinationPath('fixtures/mongo/user.js')
+        );
+    },
+
+    /**
+     * Method for initializing Mysql fixtures package relations
+     */
+    _fixturesMysqlPackageInit: function () {
+        this.npmInstall(['plus.garden.fixtures-mysql'], { 'save': true });
+    },
+
+    /**
+     * Method for initializing Mysql fixtures directories
+     */
+    _fixturesMysqlFilesInit: function () {
+    },
+
+    /**
      * Method for initializing features/support dir
      */
     _supportFilesInit: function () {
@@ -206,6 +256,7 @@ module.exports = Generator.extend({
     _gardenFilesInit: function () {
         this._gardenIndexInit();
         this._gardenContainerInit();
+        this._gardenConfigInit();
     },
 
     _gardenContainerInit: function () {
@@ -214,7 +265,9 @@ module.exports = Generator.extend({
             this.destinationPath('container.js'),
             {
                 includeWebdriver: this.webdriverInit,
-                includeApiTester: this.apiTesterInit
+                includeApiTester: this.apiTesterInit,
+                includeFixturesMongo: this.fixturesMongoInit,
+                includeFixturesMysql: this.fixturesMysqlInit
             }
         );
     },
@@ -223,6 +276,19 @@ module.exports = Generator.extend({
         this.fs.copy(
             this.templatePath('garden.js'),
             this.destinationPath('garden.js')
+        );
+    },
+
+    _gardenConfigInit: function () {
+        this.fs.copyTpl(
+            this.templatePath('config_tpl.json'),
+            this.destinationPath('config.json'),
+            {
+                includeWebdriver: this.webdriverInit,
+                includeApiTester: this.apiTesterInit,
+                includeFixturesMongo: this.fixturesMongoInit,
+                includeFixturesMysql: this.fixturesMysqlInit
+            }
         );
     },
 
@@ -236,10 +302,6 @@ module.exports = Generator.extend({
             hintsText.push(this._getWebdriverHintText());
         }
 
-        if (this.apiTesterInit) {
-            hintsText.push(this._getApiTesterHintText());
-        }
-
         return hintsText.join('\n\t') || this._sayGoodbyeText();
     },
 
@@ -249,14 +311,6 @@ module.exports = Generator.extend({
      */
     _getWebdriverHintText: function () {
         return 'If you whant to use Webdriver don\'t forget also install webdriver-manager (npm install -g webdriver-manager)!';
-    },
-
-    /**
-     * Get hint for ApiTester
-     * @returns {String}
-     */
-    _getApiTesterHintText: function () {
-        return '';
     },
 
     /**

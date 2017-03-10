@@ -13,4 +13,12 @@
     <% if (includeApiTester) { %>
     container.register('ApiModule', require('plus.garden.api'));
     <% } %>
+
+    <% if (includeFixturesMongo) { %>
+    container.register('MongoFixtureLoaderModule', require('plus.garden.fixtures-mongo'));
+    <% } %>
+
+    <% if (includeFixturesMysql) { %>
+    container.register('MysqlFixtureLoaderModule', require('plus.garden.fixtures-mysql'));
+    <% } %>
 }

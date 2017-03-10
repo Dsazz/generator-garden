@@ -1,0 +1,36 @@
+{
+    <% if (includeWebdriver) { %>
+    "host": "https://localhost",
+
+    "webdriver": {
+        "profile": {
+            "remote": {
+                "browser": "chrome",
+                "server_host": "192.168.80.1",
+                "proxy_host": "192.168.80.101"
+            }
+        }
+    }
+    <% } %>
+
+    <% if (includeApiTester) { %>
+    "api": {
+        "host": "http://google.com"
+    }
+    <% } %>
+
+    <% if (includeFixturesMongo) { %>
+    "fixtures-mongo": {
+        "uri": "mongodb://user:password@localhost:27017/dbname",
+        "fixtures": "fixtures/mongo"
+    }
+    <% } %>
+
+    <% if (includeFixturesMysql) { %>
+    "fixtures-mysql": {
+        "uri": "mysql://user@localhost:3306/dbname",
+        "models": "fixtures/mysql/models",
+        "fixtures": "fixtures/mysql"
+    }
+    <% } %>
+}
