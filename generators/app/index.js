@@ -12,9 +12,7 @@ module.exports = Generator.extend({
     prompting: function () {
         var driverPrompts = [];
         // Have Yeoman greet the user.
-        this.log(yosay(
-            'Welcome to the hunky-dory ' + chalk.red('generator-garden') + ' generator!'
-        ));
+        this.log(yosay('Welcome to the hunky-dory ' + chalk.red('garden generator!')));
 
         if (false === this._isExistsPackageJSON()) {
             this.log(yosay(
