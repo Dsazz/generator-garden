@@ -29,12 +29,6 @@ describe('generator-garden:app', function () {
             /* Change project root path to test dir */
             this.app.destinationRoot(testProjectRoot);
 
-            /* create dummy package.json for working generator */
-            fs.copySync(
-                this.app.templatePath('_package.json'),
-                this.app.destinationPath('package.json')
-            );
-
             done();
         }.bind(this));
     });
@@ -45,9 +39,29 @@ describe('generator-garden:app', function () {
         done();
     });
 
-    it('creates test package.json', function (done) {
-        assert.file([this.app.destinationPath('package.json')]);
-        done();
+    it('creates default package.json if it not exists', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['webdriver']
+        });
+        this.app.run(function () {
+            assert.file(['package.json']);
+            assert.JSONFileContent(
+                this.app.destinationPath('package.json'),
+                {
+                    "name": "generator-garden",
+                    "version": "0.1.0",
+                    "description": "Test package.json",
+                    "author": {
+                        "name": "Garden User",
+                        "email": "garden@awesome.com",
+                        "url": ""
+                    },
+                    "license": "MIT"
+                }
+            );
+
+            done();
+        }.bind(this));
     });
 
     it('should add garden package and files', function (done) {
@@ -313,7 +327,7 @@ describe('generator-garden:app', function () {
             /** File hooks.js should not contain hooks related to fixtures Mongo */
             assert.fileContent(
                 this.app.destinationPath('features/support/hooks.js'),
-                /Before\(\{tags\: \"\@fixtures\.drop\"\}, function \(scenarioResult, callback\) \{/
+                /Before\(\{tags\: \"\@fixtures\.drop\"\}, function \(callback\) \{/
             );
 
             done();

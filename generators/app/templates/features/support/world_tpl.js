@@ -13,18 +13,14 @@ function World() {
         this.browserService = browserService;
         this.driver = browserService.driver;
         this.browser = browserService.browser;
-    }.bind(this));
-    <% } %>
-
+    }.bind(this));<% } %>
     <% if (includeApiTester) { %>
-    this.api = garden.get('ApiTester');
-    <% } %>
+    this.api = garden.get('ApiTester');<% } %>
 };
 
 defineSupportCode(function({Given, Then, setWorldConstructor, setDefaultTimeout}) {
     setWorldConstructor(World);
     <% if (includeWebdriver) { %>
-    setDefaultTimeout(config.get('webdriver:waitTimeout'));
-    <% } %>
+    setDefaultTimeout(config.get('webdriver:waitTimeout'));<% } %>
 });
 

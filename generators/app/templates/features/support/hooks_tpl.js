@@ -7,22 +7,19 @@ defineSupportCode(function({After, Before}) {
 
     After("@webdriver.quit", function (scenarioResult, callback) {
         this.browserService.after(callback);
-    });
-    <% } %>
-
+    });<% } %>
     <% if (includeFixturesMongo) { %>
-    Before({tags: "@fixtures.drop"}, function (scenarioResult, callback) {
-        this.garden.wait.launchFiber(function (scenarioResult, callback) {
+    Before({tags: "@fixtures.drop"}, function (callback) {
+        this.garden.wait.launchFiber(function (callback) {
             this.garden.get('FixtureLoader').drop();
             callback();
         }.bind(this));
     });
 
-    Before({tags: "@fixtures.load"}, function (scenarioResult, callback) {
-        this.garden.wait.launchFiber(function (scenarioResult, callback) {
+    Before({tags: "@fixtures.load"}, function (callback) {
+        this.garden.wait.launchFiber(function (callback) {
             this.garden.get('FixtureLoader').reload();
             callback();
         }.bind(this));
-    });
-    <% } %>
+    });<% } %>
 });

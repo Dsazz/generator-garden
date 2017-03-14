@@ -17,13 +17,6 @@ module.exports = Generator.extend({
             {maxLength: 30}
         ));
 
-        if (false === this._isExistsPackageJSON()) {
-            this.log(yosay(
-                chalk.red('File package.json not found in your project. Please create it before using generator.')
-            ));
-            process.exit(1);
-        }
-
         driverPrompts.push({
             type: 'checkbox',
             name: 'drivers',
@@ -42,17 +35,17 @@ module.exports = Generator.extend({
                 },
                 {
                     key: 'fixture_mongo',
-                    name: 'Fixtures driver for MongoDB',
+                    name: 'Fixtures loader for MongoDB',
                     value: 'fixture_mongo',
                 },
                 {
                     key: 'fixture_mysql',
-                    name: 'Fixtures driver for MYSQL',
+                    name: 'Fixtures loader for MYSQL',
                     value: 'fixture_mysql',
                 },
                 {
                     key: 'fixture_docker',
-                    name: 'Fixtures driver for Docker',
+                    name: 'Fixtures loader for Docker',
                     value: 'fixture_docker',
                 },
             ],
@@ -82,7 +75,7 @@ module.exports = Generator.extend({
                 additionalPrompts.push({
                     type: 'confirm',
                     name: 'webdriver_docker_file_init',
-                    message: 'Do you whant also install docker-compose.yml with selenium configuration for Webdriver ?'
+                    message: 'Do you want also install docker-compose.yml with selenium configuration for Webdriver ?'
                 });
             }
 
@@ -99,6 +92,10 @@ module.exports = Generator.extend({
      * Where you write the generator specific files
      */
     writing: function () {
+        if (false === this._isExistsPackageJSON()) {
+            this._packageJSONInit();
+        }
+
         if (this.webdriverInit) {
             this._webdriverFilesInit();
         }
@@ -163,7 +160,7 @@ module.exports = Generator.extend({
      */
     end: function () {
         // Show user hints about all checked drivers
-        this.log(yosay(chalk.red(this._generateHintsText()), {maxLength: 65}));
+        this.log(yosay(chalk.red(this._generateHintsText()), {maxLength: 70}));
     },
 
     _isExistsPackageJSON: function () {
@@ -175,6 +172,16 @@ module.exports = Generator.extend({
      */
     _gardenPackageInit: function () {
         this.npmInstall(['plus.garden@github:dsazz/plus.garden'], { 'save': true });
+    },
+
+    /**
+     * Method for initializing package.json
+     */
+    _packageJSONInit: function () {
+        this.fs.copy(
+            this.templatePath('_package.json'),
+            this.destinationPath('package.json')
+        );
     },
 
     /**
@@ -393,7 +400,7 @@ module.exports = Generator.extend({
      * @returns {String}
      */
     _getWebdriverHintText: function () {
-        return 'If you whant to use Webdriver don\'t forget also install webdriver-manager (npm install -g webdriver-manager)!';
+        return 'If you want to use Webdriver don\'t forget to install and run Selenium server! Read the guide of installing Selenium\n(https://github.com/Dsazz/plus.garden.webdriver/blob/master/docs/selenium-installation.md)';
     },
 
     /**
@@ -401,7 +408,7 @@ module.exports = Generator.extend({
      * @returns {String}
      */
     _getFixturesDockerHintText: function () {
-        return 'Don\'t forget install docker (https://www.docker.com/) and docker-compose (https://docs.docker.com/compose/) for using docker fixtures provider!';
+        return 'Don\'t forget to install docker (https://www.docker.com/) and docker-compose (https://docs.docker.com/compose/) for using docker fixtures provider!';
     },
 
     /**
