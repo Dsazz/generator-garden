@@ -4,7 +4,6 @@ var path = require('path');
 var assert = require('yeoman-assert');
 var helpers = require('yeoman-test');
 
-
 describe('generator-garden:app', function () {
     var testProjectRoot = path.join(__dirname, 'temp');
 
@@ -115,18 +114,18 @@ describe('generator-garden:app', function () {
             /** File container.js should contain Webdriver */
             assert.fileContent(
                 this.app.destinationPath('container.js'),
-                /container\.register\(\'Webdriver\', require\(\'plus\.garden\.webdriver\'\)\)/
+                /container\.register\('Webdriver', require\('plus\.garden\.webdriver'\)\)/
             );
 
             /** File world.js should contain initialization of WebdriverBrowser */
             assert.fileContent(
                 this.app.destinationPath('features/support/world.js'),
-                /garden\.get\(\'Webdriver\.Browser\'\)\.create\(function \(browserService\) \{/
+                /garden\.get\('Webdriver\.Browser'\)\.create\(function \(browserService\) \{/
             );
             /** File world.js should contain setuping of default timeout */
             assert.fileContent(
                 this.app.destinationPath('features/support/world.js'),
-                /setDefaultTimeout\(config\.get\(\'webdriver:waitTimeout\'\)\)/
+                /setDefaultTimeout\(config\.get\('webdriver:waitTimeout'\)\)/
             );
 
             /** File hooks.js should contain hooks related to Webdriver */
@@ -148,7 +147,7 @@ describe('generator-garden:app', function () {
                         "browser": "chrome",
                         "profile_name": "default",
 
-                        "screen_resolution":"1280x1024",
+                        "screen_resolution": "1280x1024",
                         "waitTimeout": 7000,
 
                         "profile": {
@@ -193,7 +192,7 @@ describe('generator-garden:app', function () {
             ]);
 
             done();
-        }.bind(this));
+        });
     });
 
     it('should show correct hints by webdriver', function (done) {
@@ -240,13 +239,13 @@ describe('generator-garden:app', function () {
             /** File container.js should contain ApiTester */
             assert.fileContent(
                 this.app.destinationPath('container.js'),
-                /container\.register\(\'ApiModule\', require\(\'plus\.garden\.api\'\)\)/
+                /container\.register\('ApiModule', require\('plus\.garden\.api'\)\)/
             );
 
             /** File world.js should contain initialization of ApiTester */
             assert.fileContent(
                 this.app.destinationPath('features/support/world.js'),
-                /this\.api = garden\.get\(\'ApiTester\'\)/
+                /this\.api = garden\.get\('ApiTester'\)/
             );
 
             /** File hooks.js should not contain hooks related to Webdriver */
@@ -310,7 +309,7 @@ describe('generator-garden:app', function () {
             /** File container.js should contain fixtures MongoDb module */
             assert.fileContent(
                 this.app.destinationPath('container.js'),
-                /container\.register\(\'MongoFixtureLoaderModule\', require\(\'plus\.garden\.fixtures-mongo\'\)\)/
+                /container\.register\('MongoFixtureLoaderModule', require\('plus\.garden\.fixtures-mongo'\)\)/
             );
 
             /** File config.json should contain config for MongoDb */
@@ -318,7 +317,7 @@ describe('generator-garden:app', function () {
                 this.app.destinationPath('config.json'),
                 {
                     "fixtures-mongo": {
-                    "uri": "mongodb://user:password@localhost:27017/dbname",
+                        "uri": "mongodb://user:password@localhost:27017/dbname",
                         "fixtures": "fixtures/mongo"
                     }
                 }
@@ -327,7 +326,7 @@ describe('generator-garden:app', function () {
             /** File hooks.js should not contain hooks related to fixtures Mongo */
             assert.fileContent(
                 this.app.destinationPath('features/support/hooks.js'),
-                /Before\(\{tags\: \"\@fixtures\.drop\"\}, function \(callback\) \{/
+                /Before\(\{tags: '@fixtures.drop'}, function \(scenarioResult, callback\) \{/
             );
 
             done();
@@ -372,7 +371,7 @@ describe('generator-garden:app', function () {
             /** File container.js should contain fixtures Mysql module */
             assert.fileContent(
                 this.app.destinationPath('container.js'),
-                /container\.register\(\'MysqlFixtureLoaderModule\', require\(\'plus\.garden\.fixtures-mysql\'\)\)/
+                /container\.register\('MysqlFixtureLoaderModule', require\('plus\.garden\.fixtures-mysql'\)\)/
             );
 
             /** File config.json should contain config for Mysql */
@@ -435,7 +434,7 @@ describe('generator-garden:app', function () {
             /** File container.js should contain fixtures Docker module */
             assert.fileContent(
                 this.app.destinationPath('container.js'),
-                /container\.register\(\'DockerComposeFixturesModule\', require\(\'plus\.garden\.fixtures\.docker-compose\'\)\)/
+                /container\.register\('DockerComposeFixturesModule', require\('plus\.garden\.fixtures\.docker-compose'\)\)/
             );
 
             /** File config.json should contain config for Docker */
