@@ -20,9 +20,6 @@
         "screen_resolution":"1280x1024",
         "waitTimeout": 7000,
 
-        "profile": {
-            "default": {}
-        },
         "capabilities": {
             "phantomjs": {
                 "browserName": "phantomjs",

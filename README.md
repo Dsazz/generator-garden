@@ -37,7 +37,7 @@ To find out all the dependencies that you will need, please see the correspondin
 
 ## License
 
-MIT © [Stanislav Stepanenko]()
+MIT
 
 
 [npm-image]: https://badge.fury.io/js/generator-garden.svg
