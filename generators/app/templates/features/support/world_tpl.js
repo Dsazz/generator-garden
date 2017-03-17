@@ -21,6 +21,6 @@ function World() {
 defineSupportCode(function({Given, Then, setWorldConstructor, setDefaultTimeout}) {
     setWorldConstructor(World);
     <% if (includeWebdriver) { %>
-    setDefaultTimeout(config.get('webdriver:waitTimeout'));<% } %>
+    setDefaultTimeout(config.get('cucumber:timeout'));<% } %>
 });
 

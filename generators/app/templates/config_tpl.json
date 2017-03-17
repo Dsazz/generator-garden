@@ -1,5 +1,13 @@
 {
     "host": "https://localhost",
+    "cucumber": {
+        "timeout": -1
+    },
+    "command": {
+        "functional_test": {
+            "rerun": "@rerun.txt"
+        }
+    },
     <% if (includeWebdriver) { %>
     "webdriver": {
 

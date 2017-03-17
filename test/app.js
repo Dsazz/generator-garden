@@ -63,6 +63,21 @@ describe('generator-garden:app', function () {
         }.bind(this));
     });
 
+    it('creates default .gitignore if it not exists', function (done) {
+        helpers.mockPrompt(this.app, {
+            drivers: ['webdriver']
+        });
+        this.app.run(function () {
+            assert.file(['.gitignore']);
+            assert.fileContent(
+                this.app.destinationPath('.gitignore'),
+                /\/config\/parameters\.json/
+            );
+
+            done();
+        }.bind(this));
+    });
+
     it('should add garden package and files', function (done) {
         helpers.mockPrompt(this.app, {
             drivers: ['webdriver']
@@ -125,7 +140,7 @@ describe('generator-garden:app', function () {
             /** File world.js should contain setuping of default timeout */
             assert.fileContent(
                 this.app.destinationPath('features/support/world.js'),
-                /setDefaultTimeout\(config\.get\('webdriver:waitTimeout'\)\)/
+                /setDefaultTimeout\(config\.get\('cucumber:timeout'\)\)/
             );
 
             /** File hooks.js should contain hooks related to Webdriver */

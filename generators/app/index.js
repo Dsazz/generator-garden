@@ -3,7 +3,6 @@ var Generator = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
 var fs = require('fs');
-var path = require('path');
 
 module.exports = Generator.extend({
     /**
@@ -25,7 +24,7 @@ module.exports = Generator.extend({
                 {
                     key: 'api_tester',
                     name: 'Api tester driver',
-                    value: 'api_tester',
+                    value: 'api_tester'
                 },
                 {
                     key: 'webdriver',
@@ -36,22 +35,22 @@ module.exports = Generator.extend({
                 {
                     key: 'fixture_mongo',
                     name: 'Fixtures loader for MongoDB',
-                    value: 'fixture_mongo',
+                    value: 'fixture_mongo'
                 },
                 {
                     key: 'fixture_mysql',
                     name: 'Fixtures loader for MYSQL',
-                    value: 'fixture_mysql',
+                    value: 'fixture_mysql'
                 },
                 {
                     key: 'fixture_docker',
                     name: 'Fixtures loader for Docker',
-                    value: 'fixture_docker',
-                },
+                    value: 'fixture_docker'
+                }
             ],
             validate: function (answer) {
                 if (answer.length < 1) {
-                    return yosay(chalk.red('You must choose at least one driver !'));;
+                    return yosay(chalk.red('You must choose at least one driver !'));
                 }
 
                 return true;
@@ -94,6 +93,10 @@ module.exports = Generator.extend({
     writing: function () {
         if (false === this._isExistsPackageJSON()) {
             this._packageJSONInit();
+        }
+
+        if (false === this._isExistsGitignore()) {
+            this._gitignoreInit();
         }
 
         if (this.webdriverInit) {
@@ -167,6 +170,10 @@ module.exports = Generator.extend({
         return fs.existsSync(this.destinationPath('package.json'));
     },
 
+    _isExistsGitignore: function () {
+        return fs.existsSync(this.destinationPath('.gitignore'));
+    },
+
     /**
      * Method for initializing Garden package relations
      */
@@ -181,6 +188,16 @@ module.exports = Generator.extend({
         this.fs.copy(
             this.templatePath('_package.json'),
             this.destinationPath('package.json')
+        );
+    },
+
+    /**
+     * Method for initializing .gitignore
+     */
+    _gitignoreInit: function () {
+        this.fs.copy(
+            this.templatePath('_gitignore'),
+            this.destinationPath('.gitignore')
         );
     },
 
