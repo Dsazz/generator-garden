@@ -185,7 +185,7 @@ module.exports = Generator.extend({
      * Method for initializing Garden package relations
      */
     _gardenPackageInit: function () {
-        this.npmInstall(['plus.garden@github:dsazz/plus.garden'], { 'save': true });
+        this.npmInstall(['plus.garden'], { 'save': true });
     },
 
     /**
@@ -233,10 +233,7 @@ module.exports = Generator.extend({
      * Method for initializing webdriver package relations
      */
     _webdriverPackageInit: function () {
-        this.npmInstall(
-            ['plus.garden.webdriver@github:dsazz/plus.garden.webdriver'],
-            { 'save': true }
-        );
+        this.npmInstall(['plus.garden.webdriver'], { 'save': true });
     },
 
     /**
