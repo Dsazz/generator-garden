@@ -1,5 +1,5 @@
 # generator-garden [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
-> Generator for plus.garden
+> Generator for [plus.garden](https://github.com/linkshare/plus.garden)
 
 ![alt tag](https://raw.githubusercontent.com/Dsazz/generator-garden/master/title.png)
 
